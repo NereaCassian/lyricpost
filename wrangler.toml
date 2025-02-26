@@ -1,0 +1,2 @@
+name = "lyricpost"
+route = { pattern = "/api/*", zone_name = "lyricpost.sigterm.vodka" }
