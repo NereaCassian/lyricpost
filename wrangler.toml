@@ -1,5 +1,0 @@
-name = "lyricpost"
-compatibility_date = "2023-05-18"
-route = { pattern = "/api/*", zone_name = "lyricpost.sigterm.vodka" }
-
-[vars]
