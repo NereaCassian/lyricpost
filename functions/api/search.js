@@ -2,7 +2,6 @@ export async function onRequest(context) {
     const url = new URL(context.request.url);
     const query = url.searchParams.get('q');
     const limit = url.searchParams.get('limit') || 6;
-    console.log(context.env);
     
     if (!query) {
         return new Response(JSON.stringify({ error: 'Missing search query' }), {
