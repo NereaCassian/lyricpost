@@ -23,9 +23,40 @@
                     <button class="primary" id="search">
                         Find that song!
                     </button>
+                    <div class="separator">
+                        <span>or</span>
+                    </div>
+                    <button type="button" class="secondary" id="create-custom">
+                        Create custom
+                    </button>
                 </form>
                 <div class="searching hidden"></div>
                 <div class="error hidden"></div>
+            </div>
+        </section>
+        <section class="lyrics-image-screen hidden custom-song" data-number="5">
+            <div class="screen-wrapper">
+                <header>
+                    <button class="go-to-screen material-symbols-outlined" data-number="1">chevron_left</button>
+                    <h2>Create Custom Song</h2>
+                </header>
+                <form class="custom-song-form">
+                    <div class="custom-cover-upload">
+                        <div id="custom-cover-preview">
+                            <span class="material-symbols-outlined">add_photo_alternate</span>
+                        </div>
+                        <input type="file" id="cover-upload" accept="image/*">
+                        <label for="cover-upload" class="primary">Choose Cover Image</label>
+                    </div>
+                    <div class="song-details">
+                        <input class="surface" type="text" id="custom-song-name" placeholder="Song name">
+                        <input class="surface" type="text" id="custom-artist-name" placeholder="Artist name">
+                        <textarea class="surface" id="custom-lyrics" placeholder="Enter lyrics here..."></textarea>
+                    </div>
+                    <button type="button" class="primary" id="create-custom-song">
+                        Create Song
+                    </button>
+                </form>
             </div>
         </section>
         <section class="lyrics-image-screen hidden search-results" data-number="2">
@@ -59,7 +90,10 @@
                 <header>
                     <button class="material-symbols-outlined" id="last-go-back">chevron_left</button>
                     <h2>Song image</h2>
-                    <button class="material-symbols-outlined" id="download">download</button>
+                    <div class="header-actions">
+                        <button class="material-symbols-outlined" id="copy-to-clipboard">content_copy</button>
+                        <button class="material-symbols-outlined" id="download">download</button>
+                    </div>
                 </header>
                 <div class="searching hidden"></div>
                 <div class="song-image">

@@ -25,6 +25,8 @@
     --surface-text-color: rgba(72, 220, 255, 0.7);
     --primary-color: rgba(241, 128, 45, 0.95);
     --primary-text-color: rgba(246, 246, 246, 1);
+    --secondary-color: rgba(243, 172, 225, 0.2);
+    --secondary-text-color: rgb(255, 255, 255);
     --error-color: rgba(240, 40, 30, 0.2);
     --error-text-color: rgba(240, 40, 30, 1);
 }
@@ -142,4 +144,10 @@ footer {
 
 .dark-mode #dark-mode-toggle > span::after {
     content: "light_mode";
+}
+
+
+button.secondary {
+    background: var(--secondary-color);
+    color: var(--secondary-text-color);
 }

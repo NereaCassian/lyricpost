@@ -1,0 +1,12 @@
+{
+  "name": "lyricpost",
+  "version": "1.0.0",
+  "description": "Spotify-like lyrics image generator",
+  "scripts": {
+    "dev": "wrangler pages dev frontend --local",
+    "deploy": "wrangler pages deploy frontend"
+  },
+  "devDependencies": {
+    "wrangler": "^2.0.0"
+  }
+}

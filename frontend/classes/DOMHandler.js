@@ -90,6 +90,32 @@ class DOMHandler {
 
         /** @type {Element} */
         this.toggleDarkMode = document.querySelector("#dark-mode-toggle");
+            /** @type {Element} */
+        this.createCustomButton = document.querySelector("#create-custom");
+        
+        /** @type {Element} */
+        this.customCoverPreview = document.querySelector("#custom-cover-preview");
+        
+        /** @type {Element} */
+        this.coverUploadInput = document.querySelector("#cover-upload");
+        
+        /** @type {Element} */
+        this.customSongNameInput = document.querySelector("#custom-song-name");
+        
+        /** @type {Element} */
+        this.customArtistNameInput = document.querySelector("#custom-artist-name");
+        
+        /** @type {Element} */
+        this.customLyricsInput = document.querySelector("#custom-lyrics");
+        
+        /** @type {Element} */
+        this.createCustomSongButton = document.querySelector("#create-custom-song");
+        
+        /** @type {string|null} */
+        this.customCoverBase64 = null;
+        // Add to the constructor properties
+        /** @type {Element} */
+        this.copyButton = document.querySelector("#copy-to-clipboard");
 
         this.populateColorSelection();
         this.setListeners();
@@ -106,6 +132,25 @@ class DOMHandler {
      * Sets static elements' listeners
      */
     setListeners() {
+        this.createCustomButton.addEventListener("click", () => {
+            this.displayScreen(5);
+        });
+        
+        this.coverUploadInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.customCoverBase64 = e.target.result;
+                    this.updateCoverPreview();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        this.createCustomSongButton.addEventListener("click", () => {
+            this.createCustomSong();
+        });
         this.searchButton.addEventListener("click", (e) => {
             e.preventDefault();
             this.findSong();
@@ -172,6 +217,11 @@ class DOMHandler {
             this.setTheme(
                 document.body.classList.contains("dark-mode") ? "light" : "dark"
             );
+        });
+
+        this.copyButton = document.querySelector("#copy-to-clipboard");
+        this.copyButton.addEventListener("click", () => {
+            this.copySongImageToClipboard();
         });
     }
 
@@ -368,6 +418,122 @@ class DOMHandler {
         this.setSongImageColor(
             COLORS[Math.floor(Math.random() * COLORS.length)]
         );
+    }
+    updateCoverPreview() {
+        if (this.customCoverBase64) {
+            if (!this.customCoverPreview.querySelector("img")) {
+                const img = document.createElement("img");
+                this.customCoverPreview.innerHTML = "";
+                this.customCoverPreview.appendChild(img);
+            }
+            this.customCoverPreview.querySelector("img").src = this.customCoverBase64;
+        }
+    }
+
+    createCustomSong() {
+        const songName = this.customSongNameInput.value.trim();
+        const artistName = this.customArtistNameInput.value.trim();
+        const lyrics = this.customLyricsInput.value.trim();
+        
+        if (!songName || !artistName || !lyrics || !this.customCoverBase64) {
+            this.throwError("Please fill in all fields and select a cover image");
+            return;
+        }
+        
+        // Create mock song data structure similar to what the API would return
+        const customSongData = {
+            name: songName,
+            duration_ms: 180000, // Default 3 minutes
+            external_urls: {
+                spotify: "#"
+            },
+            artists: [
+                {
+                    name: artistName,
+                    external_urls: {
+                        spotify: "#"
+                    }
+                }
+            ],
+            album: {
+                images: [
+                    {
+                        url: this.customCoverBase64
+                    }
+                ]
+            }
+        };
+        
+        const customLyrics = {
+            plainLyrics: lyrics
+        };
+        
+        // Clear previous songs
+        this.songs = [];
+        
+        // Create song object
+        const song = new Song(customSongData, customLyrics);
+        this.songs.push(song);
+        this.selectedSongIndex = 0;
+        
+        // Skip song selection and go directly to lyrics selection
+        this.populateLineSelection();
+        this.displayScreen(3);
+    }
+    /**
+     * Copies song image to clipboard
+     */
+    async copySongImageToClipboard() {
+        this.displaySearching("Copying to clipboard...");
+
+        try {
+            let canvas = await html2canvas(this.songImage, {
+                backgroundColor: null,
+                scale: window.devicePixelRatio * 2,
+            });
+
+            if (this.additionalBgSwitch.parentElement.classList.contains("additional-bg")) {
+                canvas = this.addBgToDownloadCanvas(canvas);
+            }
+
+            canvas.toBlob(async (blob) => {
+                try {
+                    const clipboardItem = new ClipboardItem({ "image/png": blob });
+                    await navigator.clipboard.write([clipboardItem]);
+                    this.displaySuccess("Copied to clipboard!");
+                } catch (error) {
+                    console.error("Failed to copy to clipboard:", error);
+                    this.throwError("Failed to copy to clipboard. Try downloading instead.");
+                } finally {
+                    this.hideSearching();
+                }
+            });
+        } catch (error) {
+            console.error("Error generating image:", error);
+            this.hideSearching();
+            this.throwError("Failed to generate image for clipboard.");
+        }
+    }
+
+    /**
+     * Displays a success message
+     * @param {string} message
+     */
+    displaySuccess(message) {
+        this.errorTexts.forEach((element) => {
+            element.innerHTML = message;
+            element.classList.remove("hidden");
+            element.style.backgroundColor = "rgba(40, 167, 69, 0.2)";
+            element.style.color = "rgba(40, 167, 69, 1)";
+
+            setTimeout(() => {
+                element.classList.add("hidden");
+                setTimeout(() => {
+                    element.style.backgroundColor = "";
+                    element.style.color = "";
+                }, 300);
+            }, 2000);
+        });
     }
 
     /**
